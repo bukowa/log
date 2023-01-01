@@ -1,11 +1,17 @@
 package log
 
 import (
+	"fmt"
 	"log"
 	"os"
 )
 
 var (
+	// FatalFunc is a function that is executed when the Fatal log function is called.
+	// By default, this function terminates the program with a non-zero exit code.
+	FatalFunc = func() {
+		os.Exit(1)
+	}
 	// LoggerDebug is the logger for debug level log messages.
 	LoggerDebug = log.New(os.Stdout, "\x1B[36mDEBUG: \x1B[0m", log.Ldate|log.Ltime|log.Lmsgprefix)
 	// LoggerInfo is the logger for info level log messages.
@@ -114,29 +120,32 @@ func Errorln(a ...interface{}) {
 	}
 }
 
-// Fatal logs a message at the fatal severity level.
+// Fatal logs a message with the FatalLevel severity level.
 // If the desired log level (LogLevel) is equal to or greater than the FatalLevel, the message will be logged
-// and the program will terminate.
+// and FatalFunc will be executed.
 func Fatal(a ...interface{}) {
 	if IsLogged(LogLevel, FatalLevel) {
-		LoggerFatal.Fatal(a...)
+		LoggerFatal.Output(2, fmt.Sprint(a...))
+		FatalFunc()
 	}
 }
 
-// Fatalf logs a formatted message at the fatal severity level.
+// Fatalf logs a message with the FatalLevel severity level.
 // If the desired log level (LogLevel) is equal to or greater than the FatalLevel, the message will be logged
-// and the program will terminate.
+// and FatalFunc will be executed.
 func Fatalf(format string, a ...interface{}) {
 	if IsLogged(LogLevel, FatalLevel) {
-		LoggerFatal.Fatalf(format, a...)
+		LoggerFatal.Output(2, fmt.Sprintf(format, a...))
+		FatalFunc()
 	}
 }
 
-// Fatalln logs a message at the fatal severity level, followed by a newline.
+// Fatalln logs a message with the FatalLevel severity level.
 // If the desired log level (LogLevel) is equal to or greater than the FatalLevel, the message will be logged
-// and the program will terminate.
+// and FatalFunc will be executed.
 func Fatalln(a ...interface{}) {
 	if IsLogged(LogLevel, FatalLevel) {
-		LoggerFatal.Fatalln(a...)
+		LoggerFatal.Output(2, fmt.Sprintln(a...))
+		FatalFunc()
 	}
 }
